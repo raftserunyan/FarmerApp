@@ -1,0 +1,16 @@
+using FarmerApp.Models;
+using FarmerApp.Models.ViewModels.ResponseModels;
+
+namespace FarmerApp.Services.IServices
+{
+    public interface IFarmerService
+    {
+        Balance GetBalance();
+        Balance GetBalance(int id);
+        Balance GetInvestorBalance(int id);
+        Balance GetInvestorBalance(Investor investor);
+        Dictionary<string, object> GetProductsIncome();
+        Dictionary<string, object> GetInvestorsBalance();
+        IEnumerable<CustomerBalanceResponseModel> GetCustomersBalance();
+    }
+}
