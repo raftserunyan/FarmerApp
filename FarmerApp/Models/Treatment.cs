@@ -7,5 +7,8 @@ namespace FarmerApp.Models
 		public string DrugWeight { get; set; }
 		public string TreatedProductsIds { get; set; }
         public DateTime TreatmentDate { get; set; }
+
+        public int? UserId { get; set; }
+        public User User { get; set; }
     }
 }

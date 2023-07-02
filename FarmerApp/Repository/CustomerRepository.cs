@@ -2,27 +2,36 @@ using AutoMapper;
 using FarmerApp.DataAccess.DB;
 using FarmerApp.Models;
 using FarmerApp.Repository.IRepository;
-using Microsoft.EntityFrameworkCore;
 
 namespace FarmerApp.Services
 {
-	public class CustomerRepository : ICustomerRepository
+    public class CustomerRepository : ICustomerRepository
 	{
         private FarmerDbContext _dbContext;
         private IMapper _mapper;
-        public CustomerRepository(
+        private IUserRepository _userRepository;
+        private User _user;        
+
+        public CustomerRepository(IUserRepository userRepository,
             FarmerDbContext dbContext,
             IMapper mapper
             )
         {
+            _userRepository = userRepository;
             _dbContext = dbContext;
             _mapper = mapper;
         }
 
-        public List<Customer> GetAll() => _dbContext.Customers.Include(x => x.Sales).ToList();
+        public void SetUser(int userId)
+        {
+            _user = _userRepository.GetById(userId);
+        }
+
+        public List<Customer> GetAll() => _user.Customers.ToList();
 
         public void Add(Customer customer)
         {
+            customer.UserId = _user.Id;
             _dbContext.Customers.Add(customer);
             _dbContext.SaveChanges();
         }
@@ -37,6 +46,7 @@ namespace FarmerApp.Services
 
         public void Update(Customer customer)
         {
+            customer.UserId = _user.Id;
             var customerToUpdate = _dbContext.Customers.SingleOrDefault(x => x.Id == customer.Id);
 
             _mapper.Map(customer, customerToUpdate);
@@ -44,11 +54,10 @@ namespace FarmerApp.Services
             _dbContext.SaveChanges();
         }
 
-        public IEnumerable<Customer> GetCustomersByLocation(string address) => _dbContext.Customers
+        public IEnumerable<Customer> GetCustomersByLocation(string address) => _user.Customers
             .Where(x => x.Address.ToLower().Contains(address.ToLower()));
 
-        public Customer GetById(int id) => _dbContext.Customers.Include(x => x.Sales)
-            .SingleOrDefault(x => x.Id == id);
+        public Customer GetById(int id) => _user.Customers.SingleOrDefault(x => x.Id == id);
 
     }
 }

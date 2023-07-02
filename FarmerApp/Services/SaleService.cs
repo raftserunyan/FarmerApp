@@ -13,6 +13,11 @@ namespace FarmerApp.Services
             _saleRepository = saleRepository;
         }
 
+        public void SetUser(int userId)
+        {
+            _saleRepository.SetUser(userId);
+        }
+
         public List<Sale> GetAll() => _saleRepository.GetAll();
 
         public void Add(Sale sale)

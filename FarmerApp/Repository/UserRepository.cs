@@ -2,6 +2,7 @@
 using FarmerApp.DataAccess.DB;
 using FarmerApp.Models;
 using FarmerApp.Repository.IRepository;
+using Microsoft.EntityFrameworkCore;
 
 namespace FarmerApp.Repository
 {
@@ -18,6 +19,10 @@ namespace FarmerApp.Repository
             _dbContext = dbContext;
         }
 
+        public void SetUser(int userId)
+        {
+        }
+
         public List<User> GetAll() => _dbContext.Users.ToList();
 
         public void Add(User user)
@@ -32,7 +37,20 @@ namespace FarmerApp.Repository
             _dbContext.SaveChanges();
         }
 
-        public User GetById(int id) => _dbContext.Users.SingleOrDefault(x => x.Id == id);
+        public User GetById(int id) => _dbContext.Users
+            .Include(x => x.Products)
+                .ThenInclude(x => x.Sales)
+            .Include(x => x.Expenses)
+            .Include(x => x.Customers)
+                .ThenInclude(x => x.Sales)
+            .Include(x => x.Investors)
+                .ThenInclude(x => x.Investments)
+            .Include(x => x.Treatments)
+            .Include(x => x.Sales)
+                .ThenInclude(x => x.CurrentCustomer)
+            .Include(x => x.Sales)
+                .ThenInclude(x => x.CurrentProduct)
+            .SingleOrDefault(x => x.Id == id);
 
         public void Update(User user)
         {

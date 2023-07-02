@@ -12,6 +12,11 @@ namespace FarmerApp.Services
             _expenseRepository = expenseRepository;
         }
 
+        public void SetUser(int userId)
+        {
+            _expenseRepository.SetUser(userId);
+        }
+
         public List<Expense> GetAll() => _expenseRepository.GetAll();
 
         public void Add(Expense expense) => _expenseRepository.Add(expense);

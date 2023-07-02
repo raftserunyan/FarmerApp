@@ -4,6 +4,5 @@ namespace FarmerApp.Models.ViewModels.RequestModels
     {
         public string Name { get; set; }
         public string PhoneNumber { get; set; }
-		public int InvestedAmount { get; set; }
     }
 }

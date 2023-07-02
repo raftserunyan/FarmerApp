@@ -8,6 +8,9 @@
 		public string ExpensePurpose{ get; set; }
 		public bool IsFromInvestor { get; set; }
 		public DateTime ExpenseDate { get; set; }
+
+		public int? UserId { get; set; }
+		public User User { get; set; }
 	}
 }
 

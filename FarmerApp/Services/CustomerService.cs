@@ -9,16 +9,24 @@ namespace FarmerApp.Services
     {
         private ICustomerRepository _customerRepository;
         private ISaleRepository _saleRepository;
+        private IUserRepository _userRepository;
         private IMapper _mapper;
 
         public CustomerService(
             IMapper mapper,
             ISaleRepository saleRepository,
-            ICustomerRepository customerRepository)
+            ICustomerRepository customerRepository,
+            IUserRepository userRepository)
         {
             _mapper = mapper;
             _customerRepository = customerRepository;
             _saleRepository = saleRepository;
+            _userRepository = userRepository;
+        }
+
+        public void SetUser(int userId)
+        {
+            _customerRepository.SetUser(userId);
         }
 
         public List<Customer> GetAll() => _customerRepository.GetAll();

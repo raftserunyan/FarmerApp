@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FarmerApp.Migrations
 {
     [DbContext(typeof(FarmerDbContext))]
-    [Migration("20230621050824_Initial")]
-    partial class Initial
+    [Migration("20230702102133_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -48,7 +48,12 @@ namespace FarmerApp.Migrations
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Customers");
                 });
@@ -61,8 +66,8 @@ namespace FarmerApp.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<double>("ExpenseAmount")
-                        .HasColumnType("float");
+                    b.Property<int>("ExpenseAmount")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("ExpenseDate")
                         .HasColumnType("datetime2");
@@ -76,9 +81,38 @@ namespace FarmerApp.Migrations
                     b.Property<bool>("IsFromInvestor")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("Expenses");
+                });
+
+            modelBuilder.Entity("FarmerApp.Models.Investment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<double>("Amount")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("InvestorId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InvestorId");
+
+                    b.ToTable("Investments");
                 });
 
             modelBuilder.Entity("FarmerApp.Models.Investor", b =>
@@ -89,19 +123,18 @@ namespace FarmerApp.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("InvestedAmount")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("InvestedDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Investors");
                 });
@@ -120,7 +153,12 @@ namespace FarmerApp.Migrations
                     b.Property<int>("PriceKG")
                         .HasColumnType("int");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Products");
                 });
@@ -148,6 +186,9 @@ namespace FarmerApp.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
                     b.Property<double>("Weight")
                         .HasColumnType("float");
 
@@ -156,6 +197,8 @@ namespace FarmerApp.Migrations
                     b.HasIndex("CustomerId");
 
                     b.HasIndex("ProductId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Sales");
                 });
@@ -180,28 +223,150 @@ namespace FarmerApp.Migrations
                     b.Property<DateTime>("TreatmentDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("Treatments");
+                });
+
+            modelBuilder.Entity("FarmerApp.Models.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("FarmerApp.Models.Customer", b =>
+                {
+                    b.HasOne("FarmerApp.Models.User", "User")
+                        .WithMany("Customers")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("FarmerApp.Models.Expense", b =>
+                {
+                    b.HasOne("FarmerApp.Models.User", "User")
+                        .WithMany("Expenses")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("FarmerApp.Models.Investment", b =>
+                {
+                    b.HasOne("FarmerApp.Models.Investor", "Investor")
+                        .WithMany("Investments")
+                        .HasForeignKey("InvestorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Investor");
+                });
+
+            modelBuilder.Entity("FarmerApp.Models.Investor", b =>
+                {
+                    b.HasOne("FarmerApp.Models.User", "User")
+                        .WithMany("Investors")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("FarmerApp.Models.Product", b =>
+                {
+                    b.HasOne("FarmerApp.Models.User", "User")
+                        .WithMany("Products")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("FarmerApp.Models.Sale", b =>
                 {
                     b.HasOne("FarmerApp.Models.Customer", "CurrentCustomer")
-                        .WithMany()
+                        .WithMany("Sales")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("FarmerApp.Models.Product", "CurrentProduct")
-                        .WithMany()
+                        .WithMany("Sales")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("FarmerApp.Models.User", "User")
+                        .WithMany("Sales")
+                        .HasForeignKey("UserId");
+
                     b.Navigation("CurrentCustomer");
 
                     b.Navigation("CurrentProduct");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("FarmerApp.Models.Treatment", b =>
+                {
+                    b.HasOne("FarmerApp.Models.User", "User")
+                        .WithMany("Treatments")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("FarmerApp.Models.Customer", b =>
+                {
+                    b.Navigation("Sales");
+                });
+
+            modelBuilder.Entity("FarmerApp.Models.Investor", b =>
+                {
+                    b.Navigation("Investments");
+                });
+
+            modelBuilder.Entity("FarmerApp.Models.Product", b =>
+                {
+                    b.Navigation("Sales");
+                });
+
+            modelBuilder.Entity("FarmerApp.Models.User", b =>
+                {
+                    b.Navigation("Customers");
+
+                    b.Navigation("Expenses");
+
+                    b.Navigation("Investors");
+
+                    b.Navigation("Products");
+
+                    b.Navigation("Sales");
+
+                    b.Navigation("Treatments");
                 });
 #pragma warning restore 612, 618
         }

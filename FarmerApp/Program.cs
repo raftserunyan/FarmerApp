@@ -1,6 +1,4 @@
-﻿using System.Text;
-using System.Text.Json.Serialization;
-using FarmerApp.DataAccess.DB;
+﻿using FarmerApp.DataAccess.DB;
 using FarmerApp.Middlewares;
 using FarmerApp.Repository;
 using FarmerApp.Repository.IRepository;
@@ -8,10 +6,10 @@ using FarmerApp.Services;
 using FarmerApp.Services.IServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,6 +50,8 @@ builder.Services.AddSwaggerGen(c =>
     c.CustomSchemaIds(x => x.FullName);
 });
 
+builder.Services.AddHttpContextAccessor();
+
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options => {
@@ -82,6 +82,7 @@ builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
 builder.Services.AddScoped<IInvestorRepository, InvestorRepository>();
+builder.Services.AddScoped<IInvestmentRepository, InvestmentRepository>();
 builder.Services.AddScoped<ITreatmentRepository, TreatmentRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 

@@ -10,9 +10,7 @@ namespace FarmerApp.MapperProfiles
         // private readonly ISaleService _saleService;
         public InvestorProfile()
         {
-            CreateMap<InvestorRequestModel, Investor>()
-                .ForMember(investor => investor.InvestedDate,
-                    opts => opts.MapFrom(investorRequest => DateTime.Now));
+            CreateMap<InvestorRequestModel, Investor>();
 
             //Map for Update
             CreateMap<Investor, Investor>();

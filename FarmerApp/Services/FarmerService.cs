@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using FarmerApp.Models;
 using FarmerApp.Models.ViewModels.ResponseModels;
+using FarmerApp.Repository;
 using FarmerApp.Repository.IRepository;
 using FarmerApp.Services.IServices;
 
@@ -9,177 +10,165 @@ namespace FarmerApp.Services
     public class FarmerService : IFarmerService
     {
         private ISaleRepository _saleRepository;
-        private IInvestorRepository _investorRepository;
+        private IInvestmentRepository _investmentRepository;
         private IExpenseRepository _expenseRepository;
         private IProductRepository _productRepository;
 
         public FarmerService(
             IProductRepository productRepository,
             IExpenseRepository expenseRepository,
-            IInvestorRepository investorRepository,
+            IInvestmentRepository investmentRepository,
             ISaleRepository saleRepository)
         {
             _productRepository = productRepository;
             _expenseRepository = expenseRepository;
-            _investorRepository = investorRepository;
+            _investmentRepository = investmentRepository;
             _saleRepository = saleRepository;
         }
 
-        public Balance GetBalance()
+        public void SetUser(int userId)
         {
-            var sales = _saleRepository.GetAll();
-            var investors = _investorRepository.GetAll();
-            var expenses = _expenseRepository.GetAll();
-
-            var balance = new Balance();
-
-            var payed = sales.Sum(x => x.Payed);
-
-            balance.Leftover += payed;
-            balance.Leftover += investors.Sum(x => x.InvestedAmount);
-            balance.Leftover -= expenses.Sum(x => x.ExpenseAmount);
-
-            balance.Debt = (int)sales.Sum(x=> x.PriceKG * x.Weight) - payed;
-
-            return balance;
+            _productRepository.SetUser(userId);
+            _expenseRepository.SetUser(userId);
+            _investmentRepository.SetUser(userId);
+            _saleRepository.SetUser(userId);
         }
 
-        public Balance GetBalance(int id)
-        {
-            var sales = _saleRepository.GetSalesByCustomerId(id);
+        //public Balance GetBalance()
+        //{
+        //    var sales = _saleRepository.GetAll();
+        //    var investments = _investmentRepository.GetAll();
+        //    var expenses = _expenseRepository.GetAll();
 
-            var balance = new Balance
-            {
-                Leftover = sales.Sum(x => x.Payed),
-                Debt = (int)sales.Sum(x=> x.PriceKG * x.Weight) - sales.Sum(x => x.Payed)
-            };
+        //    var balance = new Balance();
 
-            return balance;
-        }
+        //    var payed = sales.Sum(x => x.Payed);
 
-        public Balance GetInvestorBalance(int id)
-        {
-            var investor = _investorRepository.GetById(id);
-            var expenses = _expenseRepository.GetAll();
+        //    balance.Leftover += payed;
+        //    balance.Leftover += investors.Sum(x => x.InvestedAmount);
+        //    balance.Leftover -= expenses.Sum(x => x.ExpenseAmount);
 
-            var balance = new Balance
-            {
-                Leftover = investor.InvestedAmount - expenses.Where(x => x.IsFromInvestor).Sum(x => x.ExpenseAmount)
-            };
+        //    balance.Debt = (int)sales.Sum(x=> x.PriceKG * x.Weight) - payed;
 
-            return balance;
-        }
+        //    return balance;
+        //}
 
-        public Balance GetInvestorBalance(Investor investor)
-        {
-            var expenses = _expenseRepository.GetAll();
+        //public Balance GetBalance(int id)
+        //{
+        //    var sales = _saleRepository.GetSalesByCustomerId(id);
 
-            var balance = new Balance
-            {
-                Leftover = investor.InvestedAmount - expenses.Where(x => x.IsFromInvestor).Sum(x => x.ExpenseAmount)
-            };
+        //    var balance = new Balance
+        //    {
+        //        Leftover = sales.Sum(x => x.Payed),
+        //        Debt = (int)sales.Sum(x=> x.PriceKG * x.Weight) - sales.Sum(x => x.Payed)
+        //    };
 
-            return balance;
-        }
+        //    return balance;
+        //}
 
-        public ProductBalanceResponseModel GetBalanceByProductId(int id)
-        {
-            var sales = _saleRepository.GetSalesByProductId(id);
+        //public Balance GetInvestorBalance(int id)
+        //{
+        //    var investor = _investorRepository.GetById(id);
+        //    var expenses = _expenseRepository.GetAll();
 
-            var balance = new ProductBalanceResponseModel
-            {
-                Weight = sales.Sum(x=> x.Weight),
-                Leftover = sales.Sum(x => x.Payed),
-                Debt = (int)sales.Sum(x=> x.PriceKG * x.Weight) - sales.Sum(x => x.Payed)
-            };
+        //    var balance = new Balance
+        //    {
+        //        Leftover = investor.InvestedAmount - expenses.Where(x => x.IsFromInvestor).Sum(x => x.ExpenseAmount)
+        //    };
 
-            return balance;
-        }
+        //    return balance;
+        //}
 
-        public Balance GetBalanceByCustomerId(int id)
-        {
-            var sales = _saleRepository.GetSalesByCustomerId(id);
+        //public Balance GetInvestorBalance(Investor investor)
+        //{
+        //    var expenses = _expenseRepository.GetAll();
 
-            var balance = new Balance
-            {
-                Leftover = sales.Sum(x => x.Payed),
-                Debt = (int)sales.Sum(x=> x.PriceKG * x.Weight) - sales.Sum(x => x.Payed)
-            };
+        //    var balance = new Balance
+        //    {
+        //        Leftover = investor.InvestedAmount - expenses.Where(x => x.IsFromInvestor).Sum(x => x.ExpenseAmount)
+        //    };
 
-            return balance;
-        }
+        //    return balance;
+        //}
 
-        public Dictionary<string, object> GetProductsIncome()
-        {
-            Dictionary<string, object> incomes = new Dictionary<string, object>();
+        //public ProductBalanceResponseModel GetBalanceByProductId(int id)
+        //{
+        //    var sales = _saleRepository.GetSalesByProductId(id);
 
-            var products = _productRepository.GetAll();
+        //    var balance = new ProductBalanceResponseModel
+        //    {
+        //        Weight = sales.Sum(x=> x.Weight),
+        //        Leftover = sales.Sum(x => x.Payed),
+        //        Debt = (int)sales.Sum(x=> x.PriceKG * x.Weight) - sales.Sum(x => x.Payed)
+        //    };
 
-            foreach (var product in products)
-            {
-                var balance = GetBalanceByProductId(product.Id);
+        //    return balance;
+        //}
 
-                incomes.Add(product.Name, balance);
-            }
+        //public Balance GetBalanceByCustomerId(int id)
+        //{
+        //    var sales = _saleRepository.GetSalesByCustomerId(id);
 
-            return incomes;
-        }
+        //    var balance = new Balance
+        //    {
+        //        Leftover = sales.Sum(x => x.Payed),
+        //        Debt = (int)sales.Sum(x=> x.PriceKG * x.Weight) - sales.Sum(x => x.Payed)
+        //    };
 
-        public Dictionary<string, object> GetInvestorsBalance()
-        {
-            Dictionary<string, object> balances = new Dictionary<string, object>();
+        //    return balance;
+        //}
 
-            var investors = _investorRepository.GetAll();
+        //public Dictionary<string, object> GetProductsIncome()
+        //{
+        //    Dictionary<string, object> incomes = new Dictionary<string, object>();
 
-            foreach (var investor in investors)
-            {
-                var balance = GetInvestorBalance(investor);
+        //    var products = _productRepository.GetAll();
 
-                balances.Add(investor.Name, balance);
-            }
+        //    foreach (var product in products)
+        //    {
+        //        var balance = GetBalanceByProductId(product.Id);
 
-            return balances;
-        }
+        //        incomes.Add(product.Name, balance);
+        //    }
 
-        public IEnumerable<CustomerBalanceResponseModel> GetCustomersBalance()
-        {
-            List<CustomerBalanceResponseModel> balances = new List<CustomerBalanceResponseModel>();
+        //    return incomes;
+        //}
 
-            var sales = _saleRepository.GetAll();
+        //public Dictionary<string, object> GetInvestorsBalance()
+        //{
+        //    Dictionary<string, object> balances = new Dictionary<string, object>();
 
-            foreach (var sale in sales)
-            {
-                var balance = GetBalanceByCustomerId(sale.CustomerId);
+        //    var investors = _investorRepository.GetAll();
 
-                balances.Add(new CustomerBalanceResponseModel
-                {
-                    CustomerId = sale.CustomerId,
-                    Leftover = balance.Leftover,
-                    Debt = balance.Debt
-                });
-            }
+        //    foreach (var investor in investors)
+        //    {
+        //        var balance = GetInvestorBalance(investor);
 
-            return balances.DistinctBy(x => x.CustomerId);
-        }
+        //        balances.Add(investor.Name, balance);
+        //    }
 
-        // public List<Dictionary<string, object>> GetProductsIncome(){
-            // List<Dictionary<string, object>> incomes = new List<Dictionary<string, object>>();
+        //    return balances;
+        //}
 
-            // var products = _productRepository.GetAll();
+        //public IEnumerable<CustomerBalanceResponseModel> GetCustomersBalance()
+        //{
+        //    List<CustomerBalanceResponseModel> balances = new List<CustomerBalanceResponseModel>();
 
-            // foreach (var product in products)
-            // {
-            //     var balance = GetBalanceByProductId(product.Id);
+        //    var sales = _saleRepository.GetAll();
 
-            //     Dictionary<string, object> dict = new Dictionary<string, object>();
+        //    foreach (var sale in sales)
+        //    {
+        //        var balance = GetBalanceByCustomerId(sale.CustomerId);
 
-            //     dict.Add("Product", product.Name);
-            //     dict.Add("Balance", balance);
+        //        balances.Add(new CustomerBalanceResponseModel
+        //        {
+        //            CustomerId = sale.CustomerId,
+        //            Leftover = balance.Leftover,
+        //            Debt = balance.Debt
+        //        });
+        //    }
 
-            //     incomes.Add(dict);
-            // }
-
-            // return incomes;
+        //    return balances.DistinctBy(x => x.CustomerId);
         //}
     }
 }

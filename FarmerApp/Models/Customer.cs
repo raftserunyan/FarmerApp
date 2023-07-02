@@ -8,7 +8,11 @@
         public string PhoneNumber { get; set; }
 		public string AccountNumber { get; set; }
 		public string HVHH { get; set; }
+
 		public IEnumerable<Sale> Sales { get; set; }
+
+        public int? UserId { get; set; }
+        public User User { get; set; }
     }
 }
 

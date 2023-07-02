@@ -10,20 +10,31 @@ namespace FarmerApp.Repository
 	{
 		private FarmerDbContext _dbContext;
 		private IMapper _mapper;
+        private IUserRepository _userRepository;
+        private User _user;
 
-		public ProductRepository(
-			IMapper mapper,
-			FarmerDbContext dbContext)
-		{
-			_mapper = mapper;
-			_dbContext = dbContext;
+        public ProductRepository(IUserRepository userRepository,
+            FarmerDbContext dbContext,
+            IMapper mapper
+            )
+        {
+            _userRepository = userRepository;
+            _dbContext = dbContext;
+            _mapper = mapper;
         }
 
-		public List<Product> GetAll() => _dbContext.Products.Include(x => x.Sales).ToList();
+        public void SetUser(int userId)
+        {
+            _user = _userRepository.GetById(userId);
+        }
+
+        public List<Product> GetAll() => _user.Products.ToList();
 
 		public void Add(Product product)
 		{
-			_dbContext.Products.Add(product);
+            product.UserId = _user.Id;
+
+            _dbContext.Products.Add(product);
 			_dbContext.SaveChanges();
 		}
 
@@ -33,10 +44,11 @@ namespace FarmerApp.Repository
 			_dbContext.SaveChanges();
         }
 
-        public Product GetById(int id) => _dbContext.Products.Include(x => x.Sales).SingleOrDefault(x => x.Id == id);
+        public Product GetById(int id) => _user.Products.SingleOrDefault(x => x.Id == id);
 
         public void Update(Product product)
         {
+            product.UserId = _user.Id;
 			var productToUpdate = _dbContext.Products.SingleOrDefault(x => x.Id == product.Id);
 
             _mapper.Map(product, productToUpdate);

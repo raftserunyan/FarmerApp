@@ -12,6 +12,11 @@ namespace FarmerApp.Services
             _investorRepository = investorRepository;
         }
 
+        public void SetUser(int userId)
+        {
+            _investorRepository.SetUser(userId);
+        }
+
         public List<Investor> GetAll() => _investorRepository.GetAll();
 
         public void Add(Investor investor) => _investorRepository.Add(investor);

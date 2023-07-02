@@ -9,19 +9,29 @@ namespace FarmerApp.Repository
     {
         private FarmerDbContext _dbContext;
         private IMapper _mapper;
+        private IUserRepository _userRepository;
+        private User _user;
 
-        public ExpenseRepository(
-            IMapper mapper,
-            FarmerDbContext dbContext)
+        public ExpenseRepository(IUserRepository userRepository,
+            FarmerDbContext dbContext,
+            IMapper mapper
+            )
         {
-            _mapper = mapper;
+            _userRepository = userRepository;
             _dbContext = dbContext;
+            _mapper = mapper;
         }
 
-        public List<Expense> GetAll() => _dbContext.Expenses.ToList();
+        public void SetUser(int userId)
+        {
+            _user = _userRepository.GetById(userId);
+        }
+
+        public List<Expense> GetAll() => _user.Expenses.ToList();
 
         public void Add(Expense expense)
         {
+            expense.UserId = _user.Id;
             _dbContext.Expenses.Add(expense);
             _dbContext.SaveChanges();
         }
@@ -32,13 +42,14 @@ namespace FarmerApp.Repository
             _dbContext.SaveChanges();
         }
 
-        public IEnumerable<Expense> GetByPurpose(string purpose) => _dbContext.Expenses.Where(x => x.ExpensePurpose.ToLower().Contains(purpose.ToLower()));
+        public IEnumerable<Expense> GetByPurpose(string purpose) => _user.Expenses.Where(x => x.ExpensePurpose.ToLower().Contains(purpose.ToLower()));
 
-        public Expense GetById(int Id) => _dbContext.Expenses.SingleOrDefault(x => x.Id == Id);
+        public Expense GetById(int Id) => _user.Expenses.SingleOrDefault(x => x.Id == Id);
 
         public void Update(Expense expense)
         {
-            var expenseToUpdate = _dbContext.Expenses.SingleOrDefault(x => x.Id == expense.Id);
+            expense.UserId = _user.Id;
+            var expenseToUpdate = _user.Expenses.SingleOrDefault(x => x.Id == expense.Id);
 
             _mapper.Map(expense, expenseToUpdate);
 

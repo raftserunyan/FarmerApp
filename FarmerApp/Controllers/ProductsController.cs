@@ -3,11 +3,13 @@ using FarmerApp.Models;
 using FarmerApp.Models.ViewModels.RequestModels;
 using FarmerApp.Models.ViewModels.ResponseModels;
 using FarmerApp.Services.IServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FarmerApp.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/[controller]")]
     public class ProductsController : ControllerBase
     {
@@ -20,6 +22,7 @@ namespace FarmerApp.Controllers
         {
             _mapper = mapper;
             _productService = productService;
+            _productService.SetUser(int.Parse(User.Claims.FirstOrDefault(x => x.Type == "NameIdentifier").Value));
         }
 
         [HttpGet]

@@ -13,7 +13,12 @@ namespace FarmerApp.Services
 			_treatmentRepository = treatmentRepository;
         }
 
-		public List<Treatment> GetAll() => _treatmentRepository.GetAll();
+        public void SetUser(int userId)
+        {
+            _treatmentRepository.SetUser(userId);
+        }
+
+        public List<Treatment> GetAll() => _treatmentRepository.GetAll();
 		public void Add(Treatment treatment) => _treatmentRepository.Add(treatment);
 
 		public void Remove(int id) => _treatmentRepository.Remove(id);

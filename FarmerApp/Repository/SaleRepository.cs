@@ -10,19 +10,29 @@ namespace FarmerApp.Repository
 	{
 		private FarmerDbContext _dbContext;
 		private IMapper _mapper;
+        private IUserRepository _userRepository;
+        private User _user;
 
-        public SaleRepository(
-            IMapper mapper,
-            FarmerDbContext dbContext)
+        public SaleRepository(IUserRepository userRepository,
+            FarmerDbContext dbContext,
+            IMapper mapper
+            )
         {
-            _mapper = mapper;
+            _userRepository = userRepository;
             _dbContext = dbContext;
+            _mapper = mapper;
         }
 
-        public List<Sale> GetAll() => _dbContext.Sales.Include(x => x.CurrentCustomer).Include(x => x.CurrentProduct).ToList();
+        public void SetUser(int userId)
+        {
+            _user = _userRepository.GetById(userId);
+        }
+
+        public List<Sale> GetAll() => _user.Sales.ToList();
 
         public void Add(Sale sale)
         {
+            sale.UserId = _user.Id;
             _dbContext.Sales.Add(sale);
 			_dbContext.SaveChanges();
         }
@@ -33,14 +43,15 @@ namespace FarmerApp.Repository
 			_dbContext.SaveChanges();
         }
 
-        public Sale GetById(int id) => _dbContext.Sales.Include(x => x.CurrentCustomer).Include(x => x.CurrentProduct).SingleOrDefault(x => x.Id == id);
+        public Sale GetById(int id) => _user.Sales.SingleOrDefault(x => x.Id == id);
 
-        public IEnumerable<Sale> GetSalesByProductId(int id) => _dbContext.Sales.Include(x => x.CurrentCustomer).Include(x => x.CurrentProduct).Where(x => x.ProductId == id);
+        public IEnumerable<Sale> GetSalesByProductId(int id) => _user.Sales.Where(x => x.ProductId == id);
 
-        public IEnumerable<Sale> GetSalesByCustomerId(int id) => _dbContext.Sales.Include(x => x.CurrentCustomer).Include(x => x.CurrentProduct).Where(x => x.CustomerId == id);
+        public IEnumerable<Sale> GetSalesByCustomerId(int id) => _user.Sales.Where(x => x.CustomerId == id);
 
         public void Update(Sale sale)
         {
+            sale.UserId = _user.Id;
             var saleToUpdate = _dbContext.Sales.SingleOrDefault(x => x.Id == sale.Id);
 
             _mapper.Map(sale, saleToUpdate);

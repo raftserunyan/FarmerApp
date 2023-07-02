@@ -3,12 +3,14 @@ using FarmerApp.Models;
 using FarmerApp.Models.ViewModels.RequestModels;
 using FarmerApp.Models.ViewModels.ResponseModels;
 using FarmerApp.Services.IServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FarmerApp.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class CustomersController : ControllerBase
     {
         private ICustomerService _customerService;
@@ -16,10 +18,12 @@ namespace FarmerApp.Controllers
 
         public CustomersController(
             IMapper mapper,
-            ICustomerService customerService)
+            ICustomerService customerService,
+            IHttpContextAccessor httpContext)
         {
             _mapper = mapper;
             _customerService = customerService;
+            _customerService.SetUser(int.Parse(httpContext.HttpContext.User.Claims.FirstOrDefault(x => x.Type == "NameIdentifier").Value));
         }
 
         [HttpGet]
