@@ -12,28 +12,30 @@ namespace FarmerApp.Controllers
     {
         private IFarmerService _farmerService;
 
-        public FarmerController(IFarmerService farmerService)
+        public FarmerController(IFarmerService farmerService,
+            IHttpContextAccessor httpContext)
         {
             _farmerService = farmerService;
-            _farmerService.SetUser(int.Parse(User.Claims.FirstOrDefault(x => x.Type == "NameIdentifier").Value));
+            _farmerService.SetUser(int.Parse(httpContext.HttpContext.User.Claims.FirstOrDefault(x => x.Type == "NameIdentifier").Value));
         }
 
-        //[HttpGet("GetBalance")]
-        //public IActionResult GetBalance() => Ok(_farmerService.GetBalance());
+        [HttpGet("GetBalance")]
+        public IActionResult GetBalance() => Ok(_farmerService.GetBalance());
 
-        //[HttpGet("GetBalance/{id}")]
-        //public IActionResult GetCustomerBalance(int id) => Ok(_farmerService.GetBalance(id));
-        
-        //[HttpGet("GetCustomersBalance")]
-        //public IActionResult GetCustomersBalance() => Ok(_farmerService.GetCustomersBalance());
 
-        //[HttpGet("GetInvestorBalance/{id}")]
-        //public IActionResult GetInvestorBalance(int id) => Ok(_farmerService.GetInvestorBalance(id));
+        [HttpGet("GetBalanceByCustomerId/{id}")]
+        public IActionResult GetCustomerBalance(int id) => Ok(_farmerService.GetBalanceByCustomer(id));
 
-        //[HttpGet("GetInvestorsBalance")]
-        //public IActionResult GetInvestorsBalance() => Ok(_farmerService.GetInvestorsBalance());
+        [HttpGet("GetCustomersBalance")]
+        public IActionResult GetCustomersBalance() => Ok(_farmerService.GetCustomersBalance());
 
-        //[HttpGet("GetProductsBalance")]
-        //public IActionResult GetProductsBalance() => Ok(_farmerService.GetProductsIncome());
+        [HttpGet("GetInvestorBalance/{id}")]
+        public IActionResult GetInvestorBalance(int id) => Ok(_farmerService.GetInvestorBalance(id));
+
+        [HttpGet("GetInvestorsBalance")]
+        public IActionResult GetInvestorsBalance() => Ok(_farmerService.GetInvestorsBalance());
+
+        [HttpGet("GetProductsBalance")]
+        public IActionResult GetProductsBalance() => Ok(_farmerService.GetProductsIncome());
     }
 }

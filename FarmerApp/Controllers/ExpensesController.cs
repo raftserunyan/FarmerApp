@@ -2,6 +2,7 @@ using AutoMapper;
 using FarmerApp.Models;
 using FarmerApp.Models.ViewModels.RequestModels;
 using FarmerApp.Models.ViewModels.ResponseModels;
+using FarmerApp.Services;
 using FarmerApp.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,11 +19,12 @@ namespace FarmerApp.Controllers
 
         public ExpensesController(
             IMapper mapper,
-            IExpenseService expenseService)
+            IExpenseService expenseService,
+            IHttpContextAccessor httpContext)
         {
             _mapper = mapper;
             _expenseService = expenseService;
-            _expenseService.SetUser(int.Parse(User.Claims.FirstOrDefault(x => x.Type == "NameIdentifier").Value));
+            _expenseService.SetUser(int.Parse(httpContext.HttpContext.User.Claims.FirstOrDefault(x => x.Type == "NameIdentifier").Value));
         }
 
         [HttpGet]

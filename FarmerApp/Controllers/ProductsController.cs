@@ -18,11 +18,12 @@ namespace FarmerApp.Controllers
 
         public ProductsController(
             IMapper mapper,
-            IProductService productService)
+            IProductService productService,
+            IHttpContextAccessor httpContext)
         {
             _mapper = mapper;
             _productService = productService;
-            _productService.SetUser(int.Parse(User.Claims.FirstOrDefault(x => x.Type == "NameIdentifier").Value));
+            _productService.SetUser(int.Parse(httpContext.HttpContext.User.Claims.FirstOrDefault(x => x.Type == "NameIdentifier").Value));
         }
 
         [HttpGet]

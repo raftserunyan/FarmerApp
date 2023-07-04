@@ -21,25 +21,26 @@ namespace FarmerApp.Controllers
         public TreatmentsController(
             IMapper mapper,
             ITreatmentService treatmentService,
-            IProductService productService)
+            IProductService productService,
+            IHttpContextAccessor httpContext)
         {
             _mapper = mapper;
             _treatmentService = treatmentService;
-            _treatmentService.SetUser(int.Parse(User.Claims.FirstOrDefault(x => x.Type == "NameIdentifier").Value));
+            _treatmentService.SetUser(int.Parse(httpContext.HttpContext.User.Claims.FirstOrDefault(x => x.Type == "NameIdentifier").Value));
             _productService = productService;
-            _productService.SetUser(int.Parse(User.Claims.FirstOrDefault(x => x.Type == "NameIdentifier").Value));
+            _productService.SetUser(int.Parse(httpContext.HttpContext.User.Claims.FirstOrDefault(x => x.Type == "NameIdentifier").Value));
         }
 
         [HttpGet]
         public IActionResult GetAll()
         {
-            var products = _productService.GetAll();
+            var treatments = _treatmentService.GetAll();
 
-            var response = new List<ProductResponseModel>();
+            var response = new List<TreatmentResponseModel>();
 
-            foreach (var product in products)
+            foreach (var treatment in treatments)
             {
-                response.Add(_mapper.Map<ProductResponseModel>(product));
+                response.Add(_mapper.Map<TreatmentResponseModel>(treatment));
             }
 
             return Ok(response);

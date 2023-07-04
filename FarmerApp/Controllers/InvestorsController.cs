@@ -18,11 +18,12 @@ namespace FarmerApp.Controllers
 
         public InvestorsController(
             IMapper mapper,
-            IInvestorService investorService)
+            IInvestorService investorService,
+            IHttpContextAccessor httpContext)
         {
             _mapper = mapper;
             _investorService = investorService;
-            _investorService.SetUser(int.Parse(User.Claims.FirstOrDefault(x => x.Type == "NameIdentifier").Value));
+            _investorService.SetUser(int.Parse(httpContext.HttpContext.User.Claims.FirstOrDefault(x => x.Type == "NameIdentifier").Value));
         }
 
         [HttpGet]

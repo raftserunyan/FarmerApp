@@ -13,7 +13,7 @@ namespace FarmerApp.Services
     {
         const string clientSecretKey = "th3m05t5up3r53cr3tk3y|kn0w";
         const string clientSecretKeyForRefresh = "th3m05t5up3r53cr3tk3y|kn0w3fd9d2d3-f15d-4124-b8ad-fa6e99ff492a";
-        const int accessExpiryMinutes = 10;
+        const int accessExpiryMinutes = 60;
         const int refreshExpiryMinutes = 600;
         const string IdClaimName = "NameIdentifier";
 
