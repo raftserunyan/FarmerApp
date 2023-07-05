@@ -73,6 +73,7 @@ builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IExpenseService, ExpenseService>();
 builder.Services.AddScoped<IInvestorService, InvestorService>();
+builder.Services.AddScoped<IInvestmentService, InvestmentService>();
 builder.Services.AddScoped<ITreatmentService, TreatmentService>();
 builder.Services.AddScoped<IFarmerService, FarmerService>();
 builder.Services.AddScoped<IIdentityService, IdentityService>();
@@ -91,11 +92,9 @@ builder.Services.AddDbContext<FarmerDbContext>(opts => opts.UseSqlServer(builder
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+
     app.UseSwagger();
     app.UseSwaggerUI();
-}
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 

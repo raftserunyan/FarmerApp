@@ -39,6 +39,8 @@ namespace FarmerApp.Services
 
             return new AuthenticationResponse
             {
+                Name = user.Name,
+                Username = user.Email,
                 AccessToken = accessToken,
                 RefreshToken = refreshToken
             };
@@ -96,6 +98,8 @@ namespace FarmerApp.Services
 
             return new AuthenticationResponse
             {
+                Name = user.Name,
+                Username = user.Email,
                 AccessToken = GenerateJwtToken(user, clientSecretKey, accessExpiryMinutes),
                 RefreshToken = refreshToken
             };
