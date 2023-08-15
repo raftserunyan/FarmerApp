@@ -25,10 +25,12 @@ namespace FarmerApp.Repository
 
         public List<User> GetAll() => _dbContext.Users.ToList();
 
-        public void Add(User user)
+        public int Add(User user)
         {
             _dbContext.Users.Add(user);
             _dbContext.SaveChanges();
+
+            return user.Id;
         }
 
         public void Remove(int id)
@@ -52,13 +54,15 @@ namespace FarmerApp.Repository
                 .ThenInclude(x => x.CurrentProduct)
             .SingleOrDefault(x => x.Id == id);
 
-        public void Update(User user)
+        public User Update(User user)
         {
             var userToUpdate = _dbContext.Users.SingleOrDefault(x => x.Id == user.Id);
 
             _mapper.Map(user, userToUpdate);
 
             _dbContext.SaveChanges();
+
+            return user;
         }
 
         public User GetByEmail(string email)

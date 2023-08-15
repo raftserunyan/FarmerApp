@@ -19,7 +19,7 @@ namespace FarmerApp.Services
 
         public List<Expense> GetAll() => _expenseRepository.GetAll();
 
-        public void Add(Expense expense) => _expenseRepository.Add(expense);
+        public int Add(Expense expense) => _expenseRepository.Add(expense);
 
         public void Remove(int id) => _expenseRepository.Remove(id);
 
@@ -27,6 +27,6 @@ namespace FarmerApp.Services
 
         public Expense GetById(int id) => _expenseRepository.GetById(id);
 
-        public void Update(Expense expense) => _expenseRepository.Update(expense);
+        public Expense Update(Expense expense) => _expenseRepository.Update(expense);
     }
 }

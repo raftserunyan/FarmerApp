@@ -20,9 +20,11 @@ namespace FarmerApp.Services
 
         public List<Sale> GetAll() => _saleRepository.GetAll();
 
-        public void Add(Sale sale)
+        public int Add(Sale sale)
         {
             _saleRepository.Add(sale);
+
+            return sale.Id;
         }
 
         public void Remove(int id)
@@ -36,7 +38,7 @@ namespace FarmerApp.Services
 
         public IEnumerable<Sale> GetSalesByCustomerId(int id) => _saleRepository.GetSalesByCustomerId(id);
 
-        public void Update(Sale sale) => _saleRepository.Update(sale);
+        public Sale Update(Sale sale) => _saleRepository.Update(sale);
     }
 }
 

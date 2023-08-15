@@ -2,6 +2,7 @@ using AutoMapper;
 using FarmerApp.DataAccess.DB;
 using FarmerApp.Models;
 using FarmerApp.Repository.IRepository;
+using Microsoft.EntityFrameworkCore;
 
 namespace FarmerApp.Repository
 {
@@ -10,30 +11,32 @@ namespace FarmerApp.Repository
         private FarmerDbContext _dbContext;
         private IMapper _mapper;
         private IUserRepository _userRepository;
-        private User _user;
+        private int _userId; //private User _user;
 
-        public InvestorRepository(IUserRepository userRepository,
+        public InvestorRepository(//IUserRepository userRepository,
             FarmerDbContext dbContext,
             IMapper mapper
             )
         {
-            _userRepository = userRepository;
+            //_userRepository = userRepository;
             _dbContext = dbContext;
             _mapper = mapper;
         }
 
         public void SetUser(int userId)
         {
-            _user = _userRepository.GetById(userId);
+            _userId = userId; //_user = _userRepository.GetById(userId);
         }
 
-        public List<Investor> GetAll() => _user.Investors.ToList();
+        public List<Investor> GetAll() => _dbContext.Investors.AsNoTracking().Include(x => x.Investments).ToList();
 
-        public void Add(Investor investor)
+        public int Add(Investor investor)
         {
-            investor.UserId = _user.Id;
+            investor.UserId = _userId; //_user.Id;
             _dbContext.Investors.Add(investor);
             _dbContext.SaveChanges();
+
+            return investor.Id;
         }
 
         public void Remove(int Id)
@@ -42,16 +45,18 @@ namespace FarmerApp.Repository
             _dbContext.SaveChanges();
         }
 
-        public Investor GetById(int Id) => _user.Investors.SingleOrDefault(x => x.Id == Id);
+        public Investor GetById(int Id) => _dbContext.Investors.AsNoTracking().Include(x => x.Investments).SingleOrDefault(x => x.Id == Id);
 
-        public void Update(Investor investor)
+        public Investor Update(Investor investor)
         {
-            investor.UserId = _user.Id;
+            investor.UserId = _userId; //_user.Id;
 			var investorToUpdate = _dbContext.Investors.SingleOrDefault(x => x.Id == investor.Id);
 
             _mapper.Map(investor, investorToUpdate);
 
             _dbContext.SaveChanges();
+
+            return investor;
         }
     }
 }

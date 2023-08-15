@@ -2,6 +2,7 @@ using AutoMapper;
 using FarmerApp.DataAccess.DB;
 using FarmerApp.Models;
 using FarmerApp.Repository.IRepository;
+using Microsoft.EntityFrameworkCore;
 
 namespace FarmerApp.Services
 {
@@ -10,30 +11,33 @@ namespace FarmerApp.Services
         private FarmerDbContext _dbContext;
         private IMapper _mapper;
         private IUserRepository _userRepository;
-        private User _user;        
+        private int _userId; //private User _user;
 
-        public CustomerRepository(IUserRepository userRepository,
+        public CustomerRepository(//IUserRepository userRepository,
             FarmerDbContext dbContext,
             IMapper mapper
             )
         {
-            _userRepository = userRepository;
+            //_userRepository = userRepository;
             _dbContext = dbContext;
             _mapper = mapper;
         }
 
         public void SetUser(int userId)
         {
-            _user = _userRepository.GetById(userId);
+            _userId = userId;
+            //_userId = userId; //_user = _userRepository.GetById(userId);
         }
 
-        public List<Customer> GetAll() => _user.Customers.ToList();
+        public List<Customer> GetAll() => _dbContext.Customers.AsNoTracking().Include(x => x.Sales).Where(x => x.UserId == _userId).ToList();
 
-        public void Add(Customer customer)
+        public int Add(Customer customer)
         {
-            customer.UserId = _user.Id;
+            customer.UserId = _userId;
             _dbContext.Customers.Add(customer);
             _dbContext.SaveChanges();
+
+            return customer.Id;
         }
 
         //TODO: If exists Sale with this customer.
@@ -44,20 +48,22 @@ namespace FarmerApp.Services
             _dbContext.SaveChanges();
         }
 
-        public void Update(Customer customer)
+        public Customer Update(Customer customer)
         {
-            customer.UserId = _user.Id;
+            customer.UserId = _userId;
             var customerToUpdate = _dbContext.Customers.SingleOrDefault(x => x.Id == customer.Id);
 
             _mapper.Map(customer, customerToUpdate);
 
             _dbContext.SaveChanges();
+
+            return customer;
         }
 
-        public IEnumerable<Customer> GetCustomersByLocation(string address) => _user.Customers
-            .Where(x => x.Address.ToLower().Contains(address.ToLower()));
+        public IEnumerable<Customer> GetCustomersByLocation(string address) => _dbContext.Customers.AsNoTracking()
+            .Where(x => x.UserId == _userId && x.Address.ToLower().Contains(address.ToLower()));
 
-        public Customer GetById(int id) => _user.Customers.SingleOrDefault(x => x.Id == id);
+        public Customer GetById(int id) => _dbContext.Customers.AsNoTracking().SingleOrDefault(x => x.Id == id);
 
     }
 }

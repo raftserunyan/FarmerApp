@@ -2,6 +2,7 @@ using AutoMapper;
 using FarmerApp.DataAccess.DB;
 using FarmerApp.Models;
 using FarmerApp.Repository.IRepository;
+using Microsoft.EntityFrameworkCore;
 
 namespace FarmerApp.Repository
 {
@@ -10,30 +11,32 @@ namespace FarmerApp.Repository
         private FarmerDbContext _dbContext;
         private IMapper _mapper;
         private IUserRepository _userRepository;
-        private User _user;
+        private int _userId; //private User _user;
 
-        public ExpenseRepository(IUserRepository userRepository,
+        public ExpenseRepository(//IUserRepository userRepository,
             FarmerDbContext dbContext,
             IMapper mapper
             )
         {
-            _userRepository = userRepository;
+            //_userRepository = userRepository;
             _dbContext = dbContext;
             _mapper = mapper;
         }
 
         public void SetUser(int userId)
         {
-            _user = _userRepository.GetById(userId);
+            _userId = userId; //_user = _userRepository.GetById(userId);
         }
 
-        public List<Expense> GetAll() => _user.Expenses.ToList();
+        public List<Expense> GetAll() => _dbContext.Expenses.AsNoTracking().ToList();
 
-        public void Add(Expense expense)
+        public int Add(Expense expense)
         {
-            expense.UserId = _user.Id;
+            expense.UserId = _userId; //_user.Id;
             _dbContext.Expenses.Add(expense);
             _dbContext.SaveChanges();
+
+            return expense.Id;
         }
 
         public void Remove(int Id)
@@ -42,18 +45,20 @@ namespace FarmerApp.Repository
             _dbContext.SaveChanges();
         }
 
-        public IEnumerable<Expense> GetByPurpose(string purpose) => _user.Expenses.Where(x => x.ExpensePurpose.ToLower().Contains(purpose.ToLower()));
+        public IEnumerable<Expense> GetByPurpose(string purpose) => _dbContext.Expenses.AsNoTracking().Where(x => x.UserId == _userId && x.ExpensePurpose.ToLower().Contains(purpose.ToLower()));
 
-        public Expense GetById(int Id) => _user.Expenses.SingleOrDefault(x => x.Id == Id);
+        public Expense GetById(int Id) => _dbContext.Expenses.AsNoTracking().SingleOrDefault(x => x.Id == Id);
 
-        public void Update(Expense expense)
+        public Expense Update(Expense expense)
         {
-            expense.UserId = _user.Id;
-            var expenseToUpdate = _user.Expenses.SingleOrDefault(x => x.Id == expense.Id);
+            expense.UserId = _userId; //_user.Id;
+            var expenseToUpdate = _dbContext.Expenses.AsNoTracking().SingleOrDefault(x => x.Id == expense.Id);
 
             _mapper.Map(expense, expenseToUpdate);
 
             _dbContext.SaveChanges();
+
+            return expense;
         }
     }
 }

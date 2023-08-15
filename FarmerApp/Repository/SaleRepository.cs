@@ -29,15 +29,19 @@ namespace FarmerApp.Repository
         {
             return _dbContext.Sales
             .AsNoTracking()
+            .Include(x => x.CurrentProduct)
+            .Include(x => x.CurrentCustomer)
             .Where(x => x.UserId == _userId)
             .ToList();
         }
 
-        public void Add(Sale sale)
+        public int Add(Sale sale)
         {
             sale.UserId = _userId;
             _dbContext.Sales.Add(sale);
 			_dbContext.SaveChanges();
+
+            return sale.Id;
         }
 
         public void Remove(int id)
@@ -63,7 +67,7 @@ namespace FarmerApp.Repository
             .Where(x => x.CustomerId == id)
             .ToList();
 
-        public void Update(Sale sale)
+        public Sale Update(Sale sale)
         {
             sale.UserId = _userId;
             var saleToUpdate = _dbContext.Sales.SingleOrDefault(x => x.Id == sale.Id);
@@ -71,6 +75,8 @@ namespace FarmerApp.Repository
             _mapper.Map(sale, saleToUpdate);
             var check = saleToUpdate;
             _dbContext.SaveChanges();
+
+            return sale;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FarmerApp.Models;
 using FarmerApp.Models.ViewModels.RequestModels;
+using FarmerApp.Models.ViewModels.ResponseModels;
 
 namespace FarmerApp.MapperProfiles
 {
@@ -12,6 +13,8 @@ namespace FarmerApp.MapperProfiles
                 .ForMember(x => x.Date, opts => opts.MapFrom(y => DateTime.Now));
 
             CreateMap<InvestmentUpdateRequestModel, Investment>();
+            CreateMap<Investment, Investment>();
+            CreateMap<Investment, InvestmentResponseModel>();
         }
     }
 }

@@ -4,8 +4,8 @@ namespace FarmerApp.Services.IServices
     {
         void SetUser(int userId);
         List<T> GetAll();
-        void Add(T t);
+        int Add(T t);
         void Remove(int id);
-        void Update(T t);
+        T Update(T t);
     }
 }

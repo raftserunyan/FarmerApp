@@ -45,9 +45,9 @@ namespace FarmerApp.Controllers
         [HttpPost]
         public IActionResult Add(CustomerRequestModel customerRequest)
         {
-            _customerService.Add(_mapper.Map<Customer>(customerRequest));
+            var id = _customerService.Add(_mapper.Map<Customer>(customerRequest));
 
-            return Ok();
+            return Ok(id);
         }
 
         [HttpDelete]
@@ -66,8 +66,8 @@ namespace FarmerApp.Controllers
             var customerToUpdate = _mapper.Map<Customer>(customerRequest);
             customerToUpdate.Id = id;
 
-            _customerService.Update(customerToUpdate);
-            return Ok();
+            var result = _customerService.Update(customerToUpdate);
+            return Ok(result);
         }
     }
 }

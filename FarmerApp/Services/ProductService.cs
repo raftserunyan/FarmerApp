@@ -20,7 +20,7 @@ namespace FarmerApp.Services
 
         public List<Product> GetAll() => _productRepository.GetAll();
 
-		public void Add(Product product) => _productRepository.Add(product);
+		public int Add(Product product) => _productRepository.Add(product);
 
 		public void Remove(int id)
 		{
@@ -34,7 +34,7 @@ namespace FarmerApp.Services
 
         public Product GetById(int id) => _productRepository.GetById(id);
 
-        public void Update(Product product) => _productRepository.Update(product);
+        public Product Update(Product product) => _productRepository.Update(product);
     }
 }
 

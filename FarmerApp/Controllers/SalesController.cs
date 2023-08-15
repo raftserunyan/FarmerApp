@@ -46,9 +46,9 @@ namespace FarmerApp.Controllers
         {
             var sale = _mapper.Map<Sale>(saleRequest);
 
-            _saleService.Add(sale);
+            var id = _saleService.Add(sale);
 
-            return Ok();
+            return Ok(id);
         }
 
         [HttpDelete]
@@ -81,8 +81,8 @@ namespace FarmerApp.Controllers
             var saleToUpdate = _mapper.Map<Sale>(saleRequest);
             saleToUpdate.Id = id;
 
-            _saleService.Update(saleToUpdate);
-            return Ok();
+            var result = _saleService.Update(saleToUpdate);
+            return Ok(result);
         }
     }
 

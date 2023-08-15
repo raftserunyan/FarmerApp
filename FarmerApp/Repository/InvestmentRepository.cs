@@ -2,6 +2,7 @@
 using FarmerApp.DataAccess.DB;
 using FarmerApp.Models;
 using FarmerApp.Repository.IRepository;
+using Microsoft.EntityFrameworkCore;
 
 namespace FarmerApp.Repository
 {
@@ -10,29 +11,31 @@ namespace FarmerApp.Repository
         private FarmerDbContext _dbContext;
         private IMapper _mapper;
         private IUserRepository _userRepository;
-        private User _user;
+        private int _userId; //private User _user;
 
-        public InvestmentRepository(IUserRepository userRepository,
+        public InvestmentRepository(//IUserRepository userRepository,
             FarmerDbContext dbContext,
             IMapper mapper
             )
         {
-            _userRepository = userRepository;
+            //_userRepository = userRepository;
             _dbContext = dbContext;
             _mapper = mapper;
         }
 
         public void SetUser(int userId)
         {
-            _user = _userRepository.GetById(userId);
+            _userId = userId; //_user = _userRepository.GetById(userId);
         }
 
-        public List<Investment> GetAll() => _user.Investors.SelectMany(x => x.Investments).ToList();
+        public List<Investment> GetAll() => _dbContext.Investors.AsNoTracking().Include(x => x.Investments).ThenInclude(x => x.Investor).SelectMany(x => x.Investments).ToList();
 
-        public void Add(Investment investment)
+        public int Add(Investment investment)
         {
             _dbContext.Investments.Add(investment);
             _dbContext.SaveChanges();
+
+            return investment.Id;
         }
 
         public void Remove(int id)
@@ -41,16 +44,18 @@ namespace FarmerApp.Repository
             _dbContext.SaveChanges();
         }
 
-        public void Update(Investment investment)
+        public Investment Update(Investment investment)
         {
             var investmentToUpdate = _dbContext.Investments.SingleOrDefault(x => x.Id == investment.Id);
 
             _mapper.Map(investment, investmentToUpdate);
 
             _dbContext.SaveChanges();
+
+            return investment;
         }
 
-        public Investment GetById(int id) => _dbContext.Investments.SingleOrDefault(x => x.Id == id);
+        public Investment GetById(int id) => _dbContext.Investments.Include(x => x.Investor).SingleOrDefault(x => x.Id == id);
 
     }
 }

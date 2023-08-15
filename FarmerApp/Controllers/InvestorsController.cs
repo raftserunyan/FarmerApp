@@ -44,9 +44,9 @@ namespace FarmerApp.Controllers
         [HttpPost]
         public IActionResult Add(InvestorRequestModel investorRequest)
         {
-            _investorService.Add(_mapper.Map<Investor>(investorRequest));
+            var id = _investorService.Add(_mapper.Map<Investor>(investorRequest));
 
-            return Ok();
+            return Ok(id);
         }
 
         [HttpDelete]
@@ -65,8 +65,8 @@ namespace FarmerApp.Controllers
             var investorToUpdate = _mapper.Map<Investor>(investorRequest);
             investorToUpdate.Id = id;
 
-            _investorService.Update(investorToUpdate);
-            return Ok();
+            var result = _investorService.Update(investorToUpdate);
+            return Ok(result);
         }
     }
 }

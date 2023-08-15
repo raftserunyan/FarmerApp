@@ -42,9 +42,9 @@ namespace FarmerApp.Controllers
         [HttpPost]
         public IActionResult Add(ProductRequestModel productRequest)
         {
-            _productService.Add(_mapper.Map<Product>(productRequest));
+            var id = _productService.Add(_mapper.Map<Product>(productRequest));
 
-            return Ok();
+            return Ok(id);
         }
 
         [HttpDelete]
@@ -69,8 +69,8 @@ namespace FarmerApp.Controllers
             var productToUpdate = _mapper.Map<Product>(productRequest);
             productToUpdate.Id = id;
 
-            _productService.Update(productToUpdate);
-            return Ok();
+            var result = _productService.Update(productToUpdate);
+            return Ok(result);
         }
     }
 }

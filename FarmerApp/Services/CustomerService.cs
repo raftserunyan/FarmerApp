@@ -31,11 +31,11 @@ namespace FarmerApp.Services
 
         public List<Customer> GetAll() => _customerRepository.GetAll();
 
-        public void Add(Customer customer) => _customerRepository.Add(customer);
+        public int Add(Customer customer) => _customerRepository.Add(customer);
 
         public void Remove(int id) => _customerRepository.Remove(id);
 
-        public void Update(Customer customer) => _customerRepository.Update(customer);
+        public Customer Update(Customer customer) => _customerRepository.Update(customer);
 
         public IEnumerable<Customer> GetCustomersByLocation(string address) => _customerRepository.GetCustomersByLocation(address);
 

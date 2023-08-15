@@ -19,12 +19,12 @@ namespace FarmerApp.Services
 
         public List<Investment> GetAll() => _investmentRepository.GetAll();
 
-        public void Add(Investment investment) => _investmentRepository.Add(investment);
+        public int Add(Investment investment) => _investmentRepository.Add(investment);
 
         public void Remove(int id) => _investmentRepository.Remove(id);
 
         public Investment GetById(int id) => _investmentRepository.GetById(id);
 
-        public void Update(Investment investment) => _investmentRepository.Update(investment);
+        public Investment Update(Investment investment) => _investmentRepository.Update(investment);
     }
 }

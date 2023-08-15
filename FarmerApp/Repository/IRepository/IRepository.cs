@@ -4,9 +4,9 @@ namespace FarmerApp.Repository.IRepository
     {
         void SetUser(int userId);
         List<T> GetAll();
-        void Add(T t);
+        int Add(T t);
         void Remove(int id);
-        void Update(T t);
+        T Update(T t);
         T GetById(int id);
     }
 }

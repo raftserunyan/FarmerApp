@@ -49,9 +49,9 @@ namespace FarmerApp.Controllers
         [HttpPost]
         public IActionResult Add(TreatmentRequestModel treatmentRequest)
         {
-            _treatmentService.Add(_mapper.Map<Treatment>(treatmentRequest));
+            var id = _treatmentService.Add(_mapper.Map<Treatment>(treatmentRequest));
 
-            return Ok();
+            return Ok(id);
         }
 
         [HttpDelete]
@@ -67,8 +67,8 @@ namespace FarmerApp.Controllers
             var treatmentToUpdate = _mapper.Map<Treatment>(treatmentRequest);
             treatmentToUpdate.Id = id;
 
-            _treatmentService.Update(treatmentToUpdate);
-            return Ok();
+            var result = _treatmentService.Update(treatmentToUpdate);
+            return Ok(result);
         }
     }
 }

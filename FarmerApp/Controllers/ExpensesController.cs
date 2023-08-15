@@ -45,9 +45,9 @@ namespace FarmerApp.Controllers
         [HttpPost]
         public IActionResult Add(ExpenseRequestModel expenseRequest)
         {
-            _expenseService.Add(_mapper.Map<Expense>(expenseRequest));
+            var id = _expenseService.Add(_mapper.Map<Expense>(expenseRequest));
 
-            return Ok();
+            return Ok(id);
         }
 
         [HttpDelete]
@@ -66,8 +66,8 @@ namespace FarmerApp.Controllers
             var expenseToUpdate = _mapper.Map<Expense>(expenseRequest);
             expenseToUpdate.Id = id;
 
-            _expenseService.Update(expenseToUpdate);
-            return Ok();
+            var result = _expenseService.Update(expenseToUpdate);
+            return Ok(result);
         }
 
     }
